@@ -1,12 +1,64 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import React, { useState } from 'react';
+import { FileExplorer } from '@/components/FileExplorer';
+import { Editor } from '@/components/Editor';
+
+interface FileNode {
+  name: string;
+  type: 'file' | 'folder';
+  children?: FileNode[];
+  content?: string;
+}
+
+const sampleFiles: FileNode[] = [
+  {
+    name: 'src',
+    type: 'folder',
+    children: [
+      {
+        name: 'components',
+        type: 'folder',
+        children: [
+          {
+            name: 'App.tsx',
+            type: 'file',
+            content: 'function App() {\n  return <div>Hello World</div>;\n}'
+          }
+        ]
+      },
+      {
+        name: 'main.tsx',
+        type: 'file',
+        content: 'import React from "react";\nimport ReactDOM from "react-dom";\n\nReactDOM.render(<App />, document.getElementById("root"));'
+      }
+    ]
+  },
+  {
+    name: 'package.json',
+    type: 'file',
+    content: '{\n  "name": "vscode-web",\n  "version": "1.0.0"\n}'
+  }
+];
 
 const Index = () => {
+  const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
+
+  const handleFileSelect = (file: FileNode) => {
+    if (file.type === 'file') {
+      console.log('Selected file:', file.name);
+      setSelectedFile(file);
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
+    <div className="flex h-screen bg-vscode-bg">
+      <FileExplorer files={sampleFiles} onFileSelect={handleFileSelect} />
+      {selectedFile ? (
+        <Editor content={selectedFile.content || ''} filename={selectedFile.name} />
+      ) : (
+        <div className="flex-1 flex items-center justify-center text-vscode-text">
+          Select a file to view its contents
+        </div>
+      )}
     </div>
   );
 };
