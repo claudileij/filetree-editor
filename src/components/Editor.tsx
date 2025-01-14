@@ -21,6 +21,13 @@ export const Editor: React.FC<EditorProps> = ({ content: initialContent, filenam
   const [isEditing, setIsEditing] = useState(false);
   const isMobile = useIsMobile();
 
+  // Atualiza o conteúdo quando o arquivo muda
+  useEffect(() => {
+    console.log('File changed, updating content:', filename);
+    setContent(initialContent);
+    setIsEditing(false);
+  }, [initialContent, filename]);
+
   useEffect(() => {
     if (!isEditing) {
       Prism.highlightAll();
