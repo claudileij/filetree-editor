@@ -3,6 +3,7 @@ import { FileExplorer } from '@/components/FileExplorer';
 import { Editor } from '@/components/Editor';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useToast } from '@/components/ui/use-toast';
+import { Chat } from '@/components/Chat/Chat';
 
 interface FileNode {
   name: string;
@@ -76,7 +77,6 @@ const Index = () => {
   const handleSave = (newContent: string) => {
     if (selectedFile) {
       setFiles(prevFiles => updateFileContent(prevFiles, selectedFile.name, newContent));
-      // Aqui você pode adicionar a chamada para a API para salvar o arquivo
       console.log('Saving file to API:', selectedFile.name, newContent);
       toast({
         title: "Arquivo salvo",
@@ -116,6 +116,7 @@ const Index = () => {
           </div>
         )}
       </div>
+      <Chat />
     </div>
   );
 };
