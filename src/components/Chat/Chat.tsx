@@ -15,7 +15,7 @@ export const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Olá! Como posso ajudar você hoje?",
+      content: "Olá! Como posso ajudar você hoje? Estou aqui para auxiliar no desenvolvimento do seu código.",
     },
   ]);
   const [isOpen, setIsOpen] = useState(false);
@@ -27,7 +27,7 @@ export const Chat = () => {
     // Simula resposta do assistente (aqui você integraria com sua API)
     const assistantMessage: Message = {
       role: "assistant",
-      content: "Esta é uma resposta simulada. Integre com sua API para respostas reais.",
+      content: "Esta é uma resposta simulada. Integre com sua API de IA para respostas reais sobre desenvolvimento de código.",
     };
     
     setTimeout(() => {
@@ -49,7 +49,7 @@ export const Chat = () => {
       <SheetContent side="right" className="w-full sm:w-[400px] p-0 flex flex-col">
         <SheetHeader className="p-4 border-b">
           <div className="flex items-center justify-between">
-            <SheetTitle>Chat Assistant</SheetTitle>
+            <SheetTitle>AI Code Assistant</SheetTitle>
             <Button
               size="icon"
               variant="ghost"
