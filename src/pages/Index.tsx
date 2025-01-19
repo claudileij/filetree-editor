@@ -86,39 +86,44 @@ const Index = () => {
   };
 
   return (
-    <div className="flex h-screen bg-vscode-bg">
-      <div className="w-[300px] flex-shrink-0 border-r border-vscode-border">
-        <Chat />
-      </div>
-      <div className="flex-1 flex">
-        {(showExplorer || !isMobile) && (
-          <FileExplorer
-            files={files}
-            onFileSelect={handleFileSelect}
-          />
-        )}
-        <div className="flex-1 flex flex-col">
-          {isMobile && (
-            <div className="bg-vscode-sidebar p-2 flex justify-between items-center">
-              <button
-                onClick={() => setShowExplorer(!showExplorer)}
-                className="text-vscode-text hover:text-white"
-              >
-                {showExplorer ? 'Hide Explorer' : 'Show Explorer'}
-              </button>
-            </div>
-          )}
-          {selectedFile ? (
-            <Editor
-              content={selectedFile.content || ''}
-              filename={selectedFile.name}
-              onSave={handleSave}
+    <div className="min-h-screen bg-[#020617] flex flex-col">
+      <header className="h-[60px] bg-[#0F172A] border-b border-[#334155] flex items-center px-6">
+        <h1 className="text-[#F8FAFC] font-inter text-xl font-semibold">AI Code Assistant</h1>
+      </header>
+      <div className="flex flex-1 h-[calc(100vh-60px)]">
+        <div className="w-[300px] flex-shrink-0 border-r border-[#334155]">
+          <Chat />
+        </div>
+        <div className="flex-1 flex">
+          {(showExplorer || !isMobile) && (
+            <FileExplorer
+              files={files}
+              onFileSelect={handleFileSelect}
             />
-          ) : (
-            <div className="flex-1 flex items-center justify-center text-vscode-text">
-              Select a file to view its contents
-            </div>
           )}
+          <div className="flex-1 flex flex-col">
+            {isMobile && (
+              <div className="bg-[#1E293B] p-2 flex justify-between items-center">
+                <button
+                  onClick={() => setShowExplorer(!showExplorer)}
+                  className="text-[#E2E8F0] hover:text-white"
+                >
+                  {showExplorer ? 'Hide Explorer' : 'Show Explorer'}
+                </button>
+              </div>
+            )}
+            {selectedFile ? (
+              <Editor
+                content={selectedFile.content || ''}
+                filename={selectedFile.name}
+                onSave={handleSave}
+              />
+            ) : (
+              <div className="flex-1 flex items-center justify-center text-[#E2E8F0]">
+                Select a file to view its contents
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
