@@ -87,36 +87,40 @@ const Index = () => {
 
   return (
     <div className="flex h-screen bg-vscode-bg">
-      {(showExplorer || !isMobile) && (
-        <FileExplorer
-          files={files}
-          onFileSelect={handleFileSelect}
-        />
-      )}
-      <div className="flex-1 flex flex-col">
-        {isMobile && (
-          <div className="bg-vscode-sidebar p-2 flex justify-between items-center">
-            <button
-              onClick={() => setShowExplorer(!showExplorer)}
-              className="text-vscode-text hover:text-white"
-            >
-              {showExplorer ? 'Hide Explorer' : 'Show Explorer'}
-            </button>
-          </div>
-        )}
-        {selectedFile ? (
-          <Editor
-            content={selectedFile.content || ''}
-            filename={selectedFile.name}
-            onSave={handleSave}
-          />
-        ) : (
-          <div className="flex-1 flex items-center justify-center text-vscode-text">
-            Select a file to view its contents
-          </div>
-        )}
+      <div className="w-[400px] flex-shrink-0 border-r border-vscode-border">
+        <Chat />
       </div>
-      <Chat />
+      <div className="flex-1 flex">
+        {(showExplorer || !isMobile) && (
+          <FileExplorer
+            files={files}
+            onFileSelect={handleFileSelect}
+          />
+        )}
+        <div className="flex-1 flex flex-col">
+          {isMobile && (
+            <div className="bg-vscode-sidebar p-2 flex justify-between items-center">
+              <button
+                onClick={() => setShowExplorer(!showExplorer)}
+                className="text-vscode-text hover:text-white"
+              >
+                {showExplorer ? 'Hide Explorer' : 'Show Explorer'}
+              </button>
+            </div>
+          )}
+          {selectedFile ? (
+            <Editor
+              content={selectedFile.content || ''}
+              filename={selectedFile.name}
+              onSave={handleSave}
+            />
+          ) : (
+            <div className="flex-1 flex items-center justify-center text-vscode-text">
+              Select a file to view its contents
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
