@@ -87,7 +87,7 @@ const Index = () => {
 
   return (
     <div className="flex h-screen bg-vscode-bg">
-      <div className="w-[400px] flex-shrink-0 border-r border-vscode-border">
+      <div className="w-[300px] flex-shrink-0 border-r border-vscode-border">
         <Chat />
       </div>
       <div className="flex-1 flex">
