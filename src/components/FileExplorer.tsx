@@ -27,24 +27,24 @@ const FileExplorerItem = ({ node, level = 0, onFileSelect }: { node: FileNode; l
   return (
     <div>
       <div
-        className={`flex items-center px-2 py-1 hover:bg-vscode-active/10 cursor-pointer text-vscode-text`}
+        className={`flex items-center px-2 py-1 hover:bg-vscode-active/10 cursor-pointer text-vscode-text overflow-hidden`}
         style={{ paddingLeft: `${level * 1.2}rem` }}
         onClick={handleClick}
       >
         {node.type === 'folder' && (
-          <span className="mr-1">
+          <span className="flex-shrink-0 mr-1">
             {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
           </span>
         )}
         {node.type === 'folder' ? (
-          <FolderIcon size={16} className="mr-2 text-yellow-400" />
+          <FolderIcon size={16} className="flex-shrink-0 mr-2 text-yellow-400" />
         ) : (
-          <FileIcon size={16} className="mr-2" />
+          <FileIcon size={16} className="flex-shrink-0 mr-2" />
         )}
-        <span>{node.name}</span>
+        <span className="truncate">{node.name}</span>
       </div>
       {node.type === 'folder' && isOpen && node.children && (
-        <div>
+        <div className="overflow-hidden">
           {node.children.map((child, index) => (
             <FileExplorerItem
               key={index}
@@ -63,7 +63,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ files, onFileSelect 
   return (
     <div className="w-64 bg-vscode-sidebar border-r border-vscode-border h-full overflow-y-auto">
       <div className="p-2 text-sm font-medium text-vscode-text">EXPLORER</div>
-      <div>
+      <div className="overflow-x-hidden">
         {files.map((file, index) => (
           <FileExplorerItem key={index} node={file} onFileSelect={onFileSelect} />
         ))}
