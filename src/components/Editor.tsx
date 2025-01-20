@@ -21,7 +21,6 @@ export const Editor: React.FC<EditorProps> = ({ content: initialContent, filenam
   const [isEditing, setIsEditing] = useState(false);
   const isMobile = useIsMobile();
 
-  // Atualiza o conteúdo quando o arquivo muda
   useEffect(() => {
     console.log('File changed, updating content:', filename);
     setContent(initialContent);
@@ -73,8 +72,8 @@ export const Editor: React.FC<EditorProps> = ({ content: initialContent, filenam
       onKeyDown={handleKeyDown}
     >
       <div className="bg-vscode-sidebar px-4 py-2 text-vscode-text border-b border-vscode-border flex justify-between items-center">
-        <span>{filename}</span>
-        <div className="flex gap-2">
+        <span className="truncate">{filename}</span>
+        <div className="flex gap-2 flex-shrink-0">
           {isEditing ? (
             <button
               onClick={handleSave}
@@ -100,7 +99,7 @@ export const Editor: React.FC<EditorProps> = ({ content: initialContent, filenam
             className="w-full h-full font-mono bg-vscode-bg text-vscode-text resize-none focus:outline-none focus:ring-1 focus:ring-vscode-active"
           />
         ) : (
-          <pre className="text-vscode-text font-mono whitespace-pre-wrap">
+          <pre className="text-vscode-text font-mono whitespace-pre-wrap break-all">
             <code className={`language-${getLanguage(filename)}`}>
               {content}
             </code>
