@@ -99,7 +99,7 @@ export const Editor: React.FC<EditorProps> = ({ content: initialContent, filenam
             className="w-full h-full font-mono bg-vscode-bg text-vscode-text resize-none focus:outline-none focus:ring-1 focus:ring-vscode-active"
           />
         ) : (
-          <pre className="text-vscode-text font-mono whitespace-pre-wrap break-all">
+          <pre className="text-vscode-text font-mono whitespace-pre-wrap break-words max-w-full overflow-x-hidden">
             <code className={`language-${getLanguage(filename)}`}>
               {content}
             </code>
