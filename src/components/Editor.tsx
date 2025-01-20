@@ -68,11 +68,11 @@ export const Editor: React.FC<EditorProps> = ({ content: initialContent, filenam
 
   return (
     <div 
-      className="flex-1 h-full overflow-hidden flex flex-col"
+      className="flex-1 h-full overflow-hidden flex flex-col max-w-full"
       onKeyDown={handleKeyDown}
     >
       <div className="bg-vscode-sidebar px-4 py-2 text-vscode-text border-b border-vscode-border flex justify-between items-center">
-        <span className="truncate">{filename}</span>
+        <span className="truncate max-w-[70%]">{filename}</span>
         <div className="flex gap-2 flex-shrink-0">
           {isEditing ? (
             <button
@@ -91,20 +91,24 @@ export const Editor: React.FC<EditorProps> = ({ content: initialContent, filenam
           )}
         </div>
       </div>
-      <div className="flex-1 p-4 overflow-auto w-full">
-        {isEditing ? (
-          <Textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="w-full h-full font-mono bg-vscode-bg text-vscode-text resize-none focus:outline-none focus:ring-1 focus:ring-vscode-active"
-          />
-        ) : (
-          <pre className="w-full overflow-x-auto">
-            <code className={`language-${getLanguage(filename)} whitespace-pre-wrap break-words`}>
-              {content}
-            </code>
-          </pre>
-        )}
+      <div className="flex-1 overflow-auto relative w-full">
+        <div className="absolute inset-0 p-4">
+          {isEditing ? (
+            <Textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="w-full h-full font-mono bg-vscode-bg text-vscode-text resize-none focus:outline-none focus:ring-1 focus:ring-vscode-active"
+            />
+          ) : (
+            <pre className="w-full h-full overflow-x-auto">
+              <code 
+                className={`language-${getLanguage(filename)} whitespace-pre-wrap break-all inline-block min-w-full`}
+              >
+                {content}
+              </code>
+            </pre>
+          )}
+        </div>
       </div>
     </div>
   );
