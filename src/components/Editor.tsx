@@ -91,7 +91,7 @@ export const Editor: React.FC<EditorProps> = ({ content: initialContent, filenam
           )}
         </div>
       </div>
-      <div className={`flex-1 p-4 overflow-auto ${isMobile ? 'text-sm' : 'text-base'}`}>
+      <div className="flex-1 p-4 overflow-auto w-full">
         {isEditing ? (
           <Textarea
             value={content}
@@ -99,8 +99,8 @@ export const Editor: React.FC<EditorProps> = ({ content: initialContent, filenam
             className="w-full h-full font-mono bg-vscode-bg text-vscode-text resize-none focus:outline-none focus:ring-1 focus:ring-vscode-active"
           />
         ) : (
-          <pre className="text-vscode-text font-mono whitespace-pre-wrap break-words max-w-full overflow-x-hidden">
-            <code className={`language-${getLanguage(filename)}`}>
+          <pre className="w-full overflow-x-auto">
+            <code className={`language-${getLanguage(filename)} whitespace-pre-wrap break-words`}>
               {content}
             </code>
           </pre>
