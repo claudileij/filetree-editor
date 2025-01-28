@@ -78,7 +78,6 @@ const Index = () => {
       <div className="flex flex-1 h-[calc(100vh-60px)]">
         <div className="w-[300px] flex-shrink-0 border-r border-[#333] flex flex-col">
           <Controls />
-          <Chat />
         </div>
         <div className="flex-1 flex">
           {(showExplorer || !isMobile) && (
