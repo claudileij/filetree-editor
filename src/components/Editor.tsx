@@ -12,11 +12,11 @@ import { Textarea } from './ui/textarea';
 
 interface EditorProps {
   content: string;
-  filename: string;
+  filename?: string;
   onSave?: (content: string) => void;
 }
 
-export const Editor: React.FC<EditorProps> = ({ content: initialContent, filename, onSave }) => {
+export const Editor: React.FC<EditorProps> = ({ content: initialContent, filename = '', onSave }) => {
   const [content, setContent] = useState(initialContent);
   const [isEditing, setIsEditing] = useState(false);
   const isMobile = useIsMobile();
@@ -34,6 +34,8 @@ export const Editor: React.FC<EditorProps> = ({ content: initialContent, filenam
   }, [content, isEditing]);
 
   const getLanguage = (filename: string) => {
+    if (!filename) return 'typescript';
+    
     const extension = filename.split('.').pop()?.toLowerCase();
     switch (extension) {
       case 'js':
