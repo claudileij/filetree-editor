@@ -7,7 +7,6 @@ interface FileNode {
   short_description?: string;
   type?: 'file' | 'folder';
   children?: FileNode[];
-  [key: string]: any; // Permite propriedades adicionais dinâmicas
 }
 
 interface FileExplorerProps {
@@ -15,38 +14,19 @@ interface FileExplorerProps {
   onFileSelect: (file: FileNode) => void;
 }
 
-const processFiles = (files: any[]): FileNode[] => {
+const processFiles = (files: FileNode[]): FileNode[] => {
   return files.map(file => {
-    if (typeof file === 'object' && !Array.isArray(file)) {
-      const keys = Object.keys(file);
-      const isNestedStructure = keys.some(k => 
-        k !== 'name' && 
-        k !== 'content' && 
-        k !== 'short_description' && 
-        typeof file[k] === 'object'
-      );
-
-      if (isNestedStructure) {
-        const key = keys.find(k => 
-          k !== 'name' && 
-          k !== 'content' && 
-          k !== 'short_description'
-        );
-        if (key) {
-          return {
-            name: key,
-            type: 'folder',
-            children: processFiles(Array.isArray(file[key]) ? file[key] : [file[key]])
-          };
-        }
-      }
-      
+    if (file.children) {
       return {
         ...file,
-        type: 'file'
+        type: 'folder',
+        children: processFiles(file.children)
       };
     }
-    return file;
+    return {
+      ...file,
+      type: 'file'
+    };
   });
 };
 
