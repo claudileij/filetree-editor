@@ -14,12 +14,16 @@ interface FileNode {
   short_description?: string;
 }
 
-const sampleFiles = {
+const sampleFiles: { files: FileNode[] } = {
   files: [
     {
-      src: [
+      name: "src",
+      type: "folder",
+      children: [
         {
-          components: [
+          name: "components",
+          type: "folder",
+          children: [
             {
               name: "App.tsx",
               content: "function App() {\n  return <div>Hello World</div>;\n}",

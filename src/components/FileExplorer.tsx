@@ -7,6 +7,7 @@ interface FileNode {
   short_description?: string;
   type?: 'file' | 'folder';
   children?: FileNode[];
+  [key: string]: any; // Permite propriedades adicionais dinâmicas
 }
 
 interface FileExplorerProps {
@@ -17,19 +18,33 @@ interface FileExplorerProps {
 const processFiles = (files: any[]): FileNode[] => {
   return files.map(file => {
     if (typeof file === 'object' && !Array.isArray(file)) {
-      const key = Object.keys(file).find(k => k !== 'name' && k !== 'content' && k !== 'short_description');
-      if (key) {
-        return {
-          name: key,
-          type: 'folder',
-          children: processFiles(file[key])
-        };
-      } else {
-        return {
-          ...file,
-          type: 'file'
-        };
+      const keys = Object.keys(file);
+      const isNestedStructure = keys.some(k => 
+        k !== 'name' && 
+        k !== 'content' && 
+        k !== 'short_description' && 
+        typeof file[k] === 'object'
+      );
+
+      if (isNestedStructure) {
+        const key = keys.find(k => 
+          k !== 'name' && 
+          k !== 'content' && 
+          k !== 'short_description'
+        );
+        if (key) {
+          return {
+            name: key,
+            type: 'folder',
+            children: processFiles(Array.isArray(file[key]) ? file[key] : [file[key]])
+          };
+        }
       }
+      
+      return {
+        ...file,
+        type: 'file'
+      };
     }
     return file;
   });
@@ -83,9 +98,10 @@ const FileExplorerItem = ({ node, level = 0, onFileSelect }: { node: FileNode; l
 
 export const FileExplorer: React.FC<FileExplorerProps> = ({ files, onFileSelect }) => {
   const processedFiles = processFiles(files);
+  console.log('Processed files:', processedFiles);
 
   return (
-    <div className="w-64 bg-vscode-sidebar border-r border-vscode-border h-full overflow-y-auto">
+    <div className="w-64 bg-vscode-sidebar border-r border-vscode-border overflow-y-auto">
       <div className="p-2 text-sm font-medium text-vscode-text">EXPLORER</div>
       <div className="overflow-x-hidden">
         {processedFiles.map((file, index) => (
