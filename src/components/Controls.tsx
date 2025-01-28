@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
-import { Terminal, Power, RefreshCw, Square } from 'lucide-react';
+import { Terminal, Power, RefreshCw, Square, MessageSquare } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs';
+import { Chat } from './Chat/Chat';
 
 interface ControlsProps {
   className?: string;
@@ -65,13 +67,37 @@ export const Controls = ({ className }: ControlsProps) => {
           Stop
         </Button>
       </div>
-      {isRunning && (
-        <ScrollArea className="flex-1 bg-black p-2 text-sm font-mono text-green-500">
-          {logs.map((log, index) => (
-            <div key={index} className="whitespace-pre-wrap">{log}</div>
-          ))}
-        </ScrollArea>
-      )}
+      
+      <Tabs defaultValue="chat" className="flex-1">
+        <TabsList className="w-full bg-[#1E1E1E] border-b border-[#333] rounded-none">
+          <TabsTrigger value="chat" className="flex-1 data-[state=active]:bg-[#2D2D2D]">
+            <MessageSquare className="w-4 h-4 mr-2" />
+            Chat
+          </TabsTrigger>
+          <TabsTrigger value="terminal" className="flex-1 data-[state=active]:bg-[#2D2D2D]">
+            <Terminal className="w-4 h-4 mr-2" />
+            Terminal
+          </TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="chat" className="flex-1 m-0">
+          <Chat />
+        </TabsContent>
+        
+        <TabsContent value="terminal" className="flex-1 m-0">
+          {isRunning ? (
+            <ScrollArea className="flex-1 bg-black p-2 text-sm font-mono text-green-500">
+              {logs.map((log, index) => (
+                <div key={index} className="whitespace-pre-wrap">{log}</div>
+              ))}
+            </ScrollArea>
+          ) : (
+            <div className="flex-1 bg-black p-2 text-sm font-mono text-gray-500 flex items-center justify-center">
+              Aguardando logs
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
