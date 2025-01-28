@@ -33,7 +33,7 @@ export const Controls = ({ className }: ControlsProps) => {
   };
 
   return (
-    <div className={`flex flex-col ${className}`}>
+    <div className={`flex flex-col h-full ${className}`}>
       <div className="flex items-center gap-2 p-2 bg-[#1E1E1E] border-b border-[#333]">
         <div className={`w-3 h-3 rounded-full ${status === 'online' ? 'bg-green-500' : 'bg-red-500'}`} />
         <Button
@@ -80,22 +80,24 @@ export const Controls = ({ className }: ControlsProps) => {
           </TabsTrigger>
         </TabsList>
         
-        <TabsContent value="chat" className="flex-1 m-0">
+        <TabsContent value="chat" className="flex-1 m-0 h-full">
           <Chat />
         </TabsContent>
         
-        <TabsContent value="terminal" className="flex-1 m-0">
-          {isRunning ? (
-            <ScrollArea className="flex-1 bg-black p-2 text-sm font-mono text-green-500">
-              {logs.map((log, index) => (
-                <div key={index} className="whitespace-pre-wrap">{log}</div>
-              ))}
-            </ScrollArea>
-          ) : (
-            <div className="flex-1 bg-black p-2 text-sm font-mono text-gray-500 flex items-center justify-center">
-              Aguardando logs
-            </div>
-          )}
+        <TabsContent value="terminal" className="flex-1 m-0 h-full">
+          <div className="h-full">
+            {isRunning ? (
+              <ScrollArea className="h-full bg-black p-2 text-sm font-mono text-green-500">
+                {logs.map((log, index) => (
+                  <div key={index} className="whitespace-pre-wrap">{log}</div>
+                ))}
+              </ScrollArea>
+            ) : (
+              <div className="h-full bg-black p-2 text-sm font-mono text-gray-500 flex items-center justify-center">
+                Aguardando logs
+              </div>
+            )}
+          </div>
         </TabsContent>
       </Tabs>
     </div>
