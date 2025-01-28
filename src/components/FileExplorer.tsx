@@ -3,15 +3,37 @@ import { ChevronRight, ChevronDown, FileIcon, FolderIcon } from 'lucide-react';
 
 interface FileNode {
   name: string;
-  type: 'file' | 'folder';
-  children?: FileNode[];
   content?: string;
+  short_description?: string;
+  type?: 'file' | 'folder';
+  children?: FileNode[];
 }
 
 interface FileExplorerProps {
   files: FileNode[];
   onFileSelect: (file: FileNode) => void;
 }
+
+const processFiles = (files: any[]): FileNode[] => {
+  return files.map(file => {
+    if (typeof file === 'object' && !Array.isArray(file)) {
+      const key = Object.keys(file).find(k => k !== 'name' && k !== 'content' && k !== 'short_description');
+      if (key) {
+        return {
+          name: key,
+          type: 'folder',
+          children: processFiles(file[key])
+        };
+      } else {
+        return {
+          ...file,
+          type: 'file'
+        };
+      }
+    }
+    return file;
+  });
+};
 
 const FileExplorerItem = ({ node, level = 0, onFileSelect }: { node: FileNode; level?: number; onFileSelect: (file: FileNode) => void }) => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -60,11 +82,13 @@ const FileExplorerItem = ({ node, level = 0, onFileSelect }: { node: FileNode; l
 };
 
 export const FileExplorer: React.FC<FileExplorerProps> = ({ files, onFileSelect }) => {
+  const processedFiles = processFiles(files);
+
   return (
     <div className="w-64 bg-vscode-sidebar border-r border-vscode-border h-full overflow-y-auto">
       <div className="p-2 text-sm font-medium text-vscode-text">EXPLORER</div>
       <div className="overflow-x-hidden">
-        {files.map((file, index) => (
+        {processedFiles.map((file, index) => (
           <FileExplorerItem key={index} node={file} onFileSelect={onFileSelect} />
         ))}
       </div>
