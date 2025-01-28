@@ -14,37 +14,35 @@ interface FileNode {
   short_description?: string;
 }
 
-const sampleFiles: { files: FileNode[] } = {
-  files: [
-    {
-      name: "src",
-      type: "folder",
-      children: [
-        {
-          name: "components",
-          type: "folder",
-          children: [
-            {
-              name: "App.tsx",
-              content: "function App() {\n  return <div>Hello World</div>;\n}",
-              short_description: "The functions thats return React component"
-            }
-          ]
-        },
-        {
-          name: "main.tsx",
-          content: "import React from 'react';\nimport ReactDOM from 'react-dom';\n\nReactDOM.render(<App />, document.getElementById('root'));",
-          short_description: "The main file to render ReactDOM"
-        }
-      ]
-    },
-    {
-      name: "package.json",
-      content: "{\n  \"name\": \"vscode-web\",\n  \"version\": \"1.0.0\"\n}",
-      short_description: "Packages to install with npm install command"
-    }
-  ]
-};
+const sampleFiles: FileNode[] = [
+  {
+    name: "src",
+    type: "folder",
+    children: [
+      {
+        name: "components",
+        type: "folder",
+        children: [
+          {
+            name: "App.tsx",
+            content: "function App() {\n  return <div>Hello World</div>;\n}",
+            short_description: "The functions thats return React component"
+          }
+        ]
+      },
+      {
+        name: "main.tsx",
+        content: "import React from 'react';\nimport ReactDOM from 'react-dom';\n\nReactDOM.render(<App />, document.getElementById('root'));",
+        short_description: "The main file to render ReactDOM"
+      }
+    ]
+  },
+  {
+    name: "package.json",
+    content: "{\n  \"name\": \"vscode-web\",\n  \"version\": \"1.0.0\"\n}",
+    short_description: "Packages to install with npm install command"
+  }
+];
 
 const Index = () => {
   const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
@@ -85,7 +83,7 @@ const Index = () => {
         <div className="flex-1 flex">
           {(showExplorer || !isMobile) && (
             <FileExplorer
-              files={sampleFiles.files}
+              files={sampleFiles}
               onFileSelect={handleFileSelect}
             />
           )}

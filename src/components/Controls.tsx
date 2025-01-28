@@ -33,36 +33,33 @@ export const Controls = ({ className }: ControlsProps) => {
   return (
     <div className={`flex flex-col ${className}`}>
       <div className="flex items-center gap-2 p-2 bg-[#1E1E1E] border-b border-[#333]">
-        <div className="flex items-center gap-1 px-2 py-1 bg-[#252526] rounded text-sm">
-          <span className={`w-2 h-2 rounded-full ${status === 'online' ? 'bg-green-500' : 'bg-red-500'}`} />
-          {status === 'online' ? 'Online' : 'Offline'}
-        </div>
+        <div className={`w-3 h-3 rounded-full ${status === 'online' ? 'bg-green-500' : 'bg-red-500'}`} />
         <Button
-          variant="ghost"
+          variant="secondary"
           size="sm"
           onClick={handleStart}
           disabled={isRunning}
-          className="gap-1"
+          className="gap-1 bg-slate-700 hover:bg-slate-600 text-white"
         >
           <Power className="w-4 h-4" />
           Start
         </Button>
         <Button
-          variant="ghost"
+          variant="secondary"
           size="sm"
           onClick={handleRestart}
           disabled={!isRunning}
-          className="gap-1"
+          className="gap-1 bg-slate-700 hover:bg-slate-600 text-white"
         >
           <RefreshCw className="w-4 h-4" />
           Restart
         </Button>
         <Button
-          variant="ghost"
+          variant="secondary"
           size="sm"
           onClick={handleStop}
           disabled={!isRunning}
-          className="gap-1"
+          className="gap-1 bg-slate-700 hover:bg-slate-600 text-white"
         >
           <Square className="w-4 h-4" />
           Stop
