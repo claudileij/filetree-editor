@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ChevronRight, ChevronDown, FileIcon, FolderIcon } from 'lucide-react';
 
@@ -82,9 +81,9 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ files, onFileSelect 
   console.log('Processed files:', processedFiles);
 
   return (
-    <div className="w-64 bg-vscode-sidebar border-r border-vscode-border flex flex-col h-full">
-      <div className="p-2 text-sm font-medium text-vscode-text border-b border-vscode-border">EXPLORER</div>
-      <div className="flex-1 overflow-y-auto">
+    <div className="w-64 bg-vscode-sidebar border-r border-vscode-border overflow-y-auto">
+      <div className="p-2 text-sm font-medium text-vscode-text">EXPLORER</div>
+      <div className="overflow-x-hidden">
         {processedFiles.map((file, index) => (
           <FileExplorerItem key={index} node={file} onFileSelect={onFileSelect} />
         ))}
