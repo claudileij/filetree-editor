@@ -1,9 +1,9 @@
+
 import React, { useState } from 'react';
 import { FileExplorer } from '@/components/FileExplorer';
 import { Editor } from '@/components/Editor';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useToast } from '@/components/ui/use-toast';
-import { Chat } from '@/components/Chat/Chat';
 import { Controls } from '@/components/Controls';
 
 interface FileNode {
@@ -75,18 +75,18 @@ const Index = () => {
       <header className="h-[60px] bg-[#252526] border-b border-[#333] flex items-center px-6">
         <h1 className="text-[#E2E8F0] font-inter text-xl font-semibold">AI Code Assistant</h1>
       </header>
-      <div className="flex flex-1 h-[calc(100vh-60px)]">
-        <div className="w-[300px] flex-shrink-0 border-r border-[#333] flex flex-col">
+      <div className="flex flex-1 h-[calc(100vh-60px)] overflow-hidden">
+        <div className="w-[300px] flex-shrink-0 border-r border-[#333] flex flex-col h-full">
           <Controls />
         </div>
-        <div className="flex-1 flex">
+        <div className="flex-1 flex h-full overflow-hidden">
           {(showExplorer || !isMobile) && (
             <FileExplorer
               files={sampleFiles}
               onFileSelect={handleFileSelect}
             />
           )}
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col h-full overflow-hidden">
             {isMobile && (
               <div className="bg-[#252526] p-2 flex justify-between items-center">
                 <button
