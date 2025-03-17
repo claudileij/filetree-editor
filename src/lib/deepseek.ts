@@ -32,16 +32,29 @@ export const generateResponse = async (messages: any[], apiKey: string) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'deepseek-chat',
+        model: 'deepseek-coder',
         messages: [
           {
             role: 'system',
-            content: 'Você é um assistente útil que responde em português do Brasil.'
+            content: `Você é um assistente de programação que ajuda a escrever ou modificar código.
+            
+Quando o usuário pedir para criar ou modificar um arquivo:
+1. Responda em português de forma concisa e amigável
+2. Se o pedido envolver código, forneça uma explicação breve do que você vai fazer
+3. Em seguida, forneça o código completo dentro de blocos de código com o formato:
+
+\`\`\`filepath:caminho/do/arquivo.extensão
+// Código completo aqui
+\`\`\`
+
+Apenas converse normalmente quando não for solicitado código específico.
+Não mostre código a menos que seja explicitamente solicitado.
+Seja sempre prestativo e forneça explicações claras e concisas.`
           },
           ...messages
         ],
         temperature: 0.7,
-        max_tokens: 1000,
+        max_tokens: 2000,
       }),
     });
 
@@ -57,4 +70,28 @@ export const generateResponse = async (messages: any[], apiKey: string) => {
     console.error('Error calling DeepSeek API:', error);
     return "Erro ao conectar com a API do DeepSeek. Verifique sua conexão ou API key.";
   }
+};
+
+// Process code blocks from the response
+export const processCodeBlocks = (content: string) => {
+  const codeBlockRegex = /```filepath:(.*?)\n([\s\S]*?)```/g;
+  let match;
+  const files: { path: string, content: string }[] = [];
+
+  while ((match = codeBlockRegex.exec(content)) !== null) {
+    const filePath = match[1].trim();
+    const fileContent = match[2].trim();
+    files.push({
+      path: filePath,
+      content: fileContent
+    });
+  }
+
+  // Replace code blocks with a note
+  const cleanedContent = content.replace(codeBlockRegex, '[Código gerado para $1]');
+  
+  return {
+    message: cleanedContent,
+    files: files
+  };
 };
