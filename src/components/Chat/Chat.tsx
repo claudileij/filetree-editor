@@ -1,7 +1,10 @@
+
 import { ScrollArea } from "../ui/scroll-area";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { useState } from "react";
+import { useDeepSeekStore, generateResponse } from "@/lib/deepseek";
+import { ApiKeyConfig } from "./ApiKeyConfig";
 
 interface Message {
   role: "user" | "assistant";
@@ -18,6 +21,7 @@ export const Chat = () => {
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const { apiKey } = useDeepSeekStore();
 
   const handleSendMessage = async (content: string) => {
     const newMessage: Message = { 
@@ -28,14 +32,35 @@ export const Chat = () => {
     setMessages((prev) => [...prev, newMessage]);
     setIsLoading(true);
     
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      // Prepare messages for the API format
+      const apiMessages = messages
+        .concat(newMessage)
+        .map(msg => ({
+          role: msg.role,
+          content: msg.content
+        }));
+      
+      // Remove the first welcome message when sending to API
+      const apiMessagesToSend = apiMessages.slice(1);
+      
+      const response = await generateResponse(apiMessagesToSend, apiKey);
+      
       setMessages((prev) => [...prev, {
         role: "assistant",
-        content: "Esta é uma resposta simulada.",
+        content: response,
         timestamp: new Date().toLocaleTimeString()
       }]);
-    }, 1000);
+    } catch (error) {
+      console.error("Error generating response:", error);
+      setMessages((prev) => [...prev, {
+        role: "assistant",
+        content: "Desculpe, ocorreu um erro ao processar sua solicitação.",
+        timestamp: new Date().toLocaleTimeString()
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -59,6 +84,7 @@ export const Chat = () => {
           )}
         </div>
       </ScrollArea>
+      <ApiKeyConfig />
       <div className="border-t border-[#333] bg-[#1E1E1E]">
         <ChatInput onSend={handleSendMessage} />
       </div>

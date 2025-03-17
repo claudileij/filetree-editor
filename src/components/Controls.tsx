@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
@@ -85,15 +86,15 @@ export const Controls = ({ className }: ControlsProps) => {
         </TabsContent>
         
         <TabsContent value="terminal" className="flex-1 m-0 h-full">
-          <div className="h-full">
+          <div className="h-full bg-black">
             {isRunning ? (
-              <ScrollArea className="h-full bg-black p-2 text-sm font-mono text-green-500">
+              <ScrollArea className="h-full p-2 text-sm font-mono text-green-500">
                 {logs.map((log, index) => (
                   <div key={index} className="whitespace-pre-wrap">{log}</div>
                 ))}
               </ScrollArea>
             ) : (
-              <div className="h-full bg-black p-2 text-sm font-mono text-gray-500 flex items-center justify-center">
+              <div className="h-full p-2 text-sm font-mono text-gray-500 flex items-center justify-center">
                 Aguardando logs
               </div>
             )}
