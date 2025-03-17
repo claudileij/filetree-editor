@@ -2,10 +2,9 @@
 import { ScrollArea } from "../ui/scroll-area";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
-import { useState, useRef, useEffect } from "react";
-import { useDeepSeekStore, generateResponse, processCodeBlocks } from "@/lib/deepseek";
+import { useState } from "react";
+import { useDeepSeekStore, generateResponse } from "@/lib/deepseek";
 import { ApiKeyConfig } from "./ApiKeyConfig";
-import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   role: "user" | "assistant";
@@ -23,18 +22,6 @@ export const Chat = () => {
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const { apiKey } = useDeepSeekStore();
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
-
-  useEffect(() => {
-    // Scroll to bottom when messages change
-    if (scrollAreaRef.current) {
-      const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
-      if (scrollContainer) {
-        scrollContainer.scrollTop = scrollContainer.scrollHeight;
-      }
-    }
-  }, [messages]);
 
   const handleSendMessage = async (content: string) => {
     const newMessage: Message = { 
@@ -57,27 +44,13 @@ export const Chat = () => {
       // Remove the first welcome message when sending to API
       const apiMessagesToSend = apiMessages.slice(1);
       
-      const responseContent = await generateResponse(apiMessagesToSend, apiKey);
-      
-      // Process the response to extract code blocks
-      const { message: cleanedMessage, files } = processCodeBlocks(responseContent);
+      const response = await generateResponse(apiMessagesToSend, apiKey);
       
       setMessages((prev) => [...prev, {
         role: "assistant",
-        content: cleanedMessage,
+        content: response,
         timestamp: new Date().toLocaleTimeString()
       }]);
-      
-      // Handle generated files
-      if (files.length > 0) {
-        // Atualizar o FileExplorer com os arquivos gerados
-        updateExplorerWithFiles(files);
-        
-        toast({
-          title: "Arquivos gerados",
-          description: `${files.length} arquivo(s) foram gerados ou atualizados`
-        });
-      }
     } catch (error) {
       console.error("Error generating response:", error);
       setMessages((prev) => [...prev, {
@@ -90,18 +63,9 @@ export const Chat = () => {
     }
   };
 
-  // Função para atualizar o Explorer com os arquivos gerados
-  const updateExplorerWithFiles = (files: { path: string, content: string }[]) => {
-    // Por enquanto, apenas logamos os arquivos
-    console.log("Arquivos para adicionar ao Explorer:", files);
-    
-    // Esta função será implementada completamente quando integrarmos com o FileExplorer
-    // Aqui apenas mostramos os arquivos no console
-  };
-
   return (
     <div className="flex flex-col h-full bg-[#1E1E1E]">
-      <ScrollArea className="flex-1 px-2" ref={scrollAreaRef}>
+      <ScrollArea className="flex-1 px-2">
         <div className="flex flex-col gap-2 py-4">
           {messages.map((message, index) => (
             <ChatMessage
