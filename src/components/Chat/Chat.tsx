@@ -70,15 +70,13 @@ export const Chat = () => {
       
       // Handle generated files
       if (files.length > 0) {
-        // In a real app, this would update the file system
-        // Here we just show a notification
+        // Atualizar o FileExplorer com os arquivos gerados
+        updateExplorerWithFiles(files);
+        
         toast({
           title: "Arquivos gerados",
           description: `${files.length} arquivo(s) foram gerados ou atualizados`
         });
-        
-        console.log("Generated files:", files);
-        // In a complete implementation, we would update the file explorer and save the files
       }
     } catch (error) {
       console.error("Error generating response:", error);
@@ -90,6 +88,15 @@ export const Chat = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Função para atualizar o Explorer com os arquivos gerados
+  const updateExplorerWithFiles = (files: { path: string, content: string }[]) => {
+    // Por enquanto, apenas logamos os arquivos
+    console.log("Arquivos para adicionar ao Explorer:", files);
+    
+    // Esta função será implementada completamente quando integrarmos com o FileExplorer
+    // Aqui apenas mostramos os arquivos no console
   };
 
   return (

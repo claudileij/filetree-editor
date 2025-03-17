@@ -90,6 +90,12 @@ export const processCodeBlocks = (content: string) => {
   // Replace code blocks with a note
   const cleanedContent = content.replace(codeBlockRegex, '[Código gerado para $1]');
   
+  // Dispara um evento global para atualizar os arquivos no Explorer
+  if (files.length > 0) {
+    const updateEvent = new CustomEvent('update-files', { detail: files });
+    document.dispatchEvent(updateEvent);
+  }
+  
   return {
     message: cleanedContent,
     files: files
