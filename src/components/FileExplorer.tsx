@@ -1,6 +1,8 @@
 
 import React from 'react';
-import { ChevronRight, ChevronDown, FileIcon, FolderIcon } from 'lucide-react';
+import { ChevronRight, ChevronDown, FileIcon, FolderIcon, Download } from 'lucide-react';
+import JSZip from 'jszip';
+import { Button } from './ui/button';
 
 interface FileNode {
   name: string;
@@ -93,9 +95,61 @@ const FileExplorerItem = ({ node, level = 0, onFileSelect }: { node: FileNode; l
 export const FileExplorer: React.FC<FileExplorerProps> = ({ files, onFileSelect }) => {
   const processedFiles = processFiles(files);
 
+  const handleDownloadZip = async () => {
+    if (files.length === 0) return;
+    
+    const zip = new JSZip();
+    
+    // Recursive function to add files to zip
+    const addToZip = (nodes: FileNode[], currentPath: string = '') => {
+      nodes.forEach(node => {
+        if (node.type === 'folder' && node.children) {
+          // Create folder path
+          const folderPath = `${currentPath}${node.name}/`;
+          // Add folder's children
+          addToZip(node.children, folderPath);
+        } else if (node.content) {
+          // Add file with its content
+          const filePath = `${currentPath}${node.name}`;
+          zip.file(filePath, node.content);
+        }
+      });
+    };
+    
+    // Add all files to the zip
+    addToZip(files);
+    
+    // Generate zip file
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    
+    // Create download link
+    const url = URL.createObjectURL(zipBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'project-files.zip';
+    document.body.appendChild(link);
+    link.click();
+    
+    // Clean up
+    URL.revokeObjectURL(url);
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="w-64 bg-vscode-sidebar border-r border-vscode-border overflow-y-auto">
-      <div className="p-2 text-sm font-medium text-vscode-text">EXPLORER</div>
+      <div className="p-2 text-sm font-medium text-vscode-text flex justify-between items-center">
+        <span>EXPLORER</span>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={handleDownloadZip}
+          disabled={files.length === 0}
+          title="Download as ZIP"
+          className="h-6 w-6"
+        >
+          <Download size={16} />
+        </Button>
+      </div>
       <div className="overflow-x-hidden">
         {processedFiles.length > 0 ? (
           processedFiles.map((file, index) => (
