@@ -15,8 +15,21 @@ interface FileExplorerProps {
   onFileSelect: (file: FileNode) => void;
 }
 
+// Helper function to sort nodes (folders first, then files, both alphabetically)
+const sortNodes = (nodes: FileNode[]): FileNode[] => {
+  return [...nodes].sort((a, b) => {
+    // If both are the same type, sort alphabetically
+    if ((a.type === 'folder' && b.type === 'folder') || 
+        (a.type !== 'folder' && b.type !== 'folder')) {
+      return a.name.localeCompare(b.name);
+    }
+    // Folders come before files
+    return a.type === 'folder' ? -1 : 1;
+  });
+};
+
 const processFiles = (files: FileNode[]): FileNode[] => {
-  return files.map(file => {
+  return sortNodes(files.map(file => {
     if (file.children) {
       return {
         ...file,
@@ -28,7 +41,7 @@ const processFiles = (files: FileNode[]): FileNode[] => {
       ...file,
       type: 'file'
     };
-  });
+  }));
 };
 
 const FileExplorerItem = ({ node, level = 0, onFileSelect }: { node: FileNode; level?: number; onFileSelect: (file: FileNode) => void }) => {
@@ -63,7 +76,7 @@ const FileExplorerItem = ({ node, level = 0, onFileSelect }: { node: FileNode; l
       </div>
       {node.type === 'folder' && isOpen && node.children && (
         <div className="overflow-hidden">
-          {node.children.map((child, index) => (
+          {sortNodes(node.children).map((child, index) => (
             <FileExplorerItem
               key={index}
               node={child}
