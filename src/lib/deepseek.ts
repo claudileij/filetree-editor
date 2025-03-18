@@ -45,16 +45,16 @@ export const generateResponse = async (messages: any[], apiKey: string): Promise
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'deepseek-chat',
+        model: 'deepseek-coder',
         messages: [
           {
             role: 'system',
-            content: 'Você é um assistente útil que responde em português do Brasil. Suas respostas devem sempre estar no formato JSON com a estrutura: {"content": "sua resposta aqui", "files": [{"name": "/caminho/para/arquivo.js", "content": "conteúdo do arquivo"}]}. O campo "files" é opcional e só deve ser incluído quando você estiver fornecendo arquivos de código. IMPORTANTE: Ao fornecer arquivos de código, certifique-se de incluir todos os arquivos necessários para que o projeto funcione corretamente, incluindo package.json, arquivos de configuração, e qualquer outro arquivo dependente. Os arquivos devem ser organizados em uma estrutura de diretórios apropriada com caminhos relativos corretos. Garanta que pacotes e dependências estejam corretamente definidos nos arquivos package.json quando necessário.'
+            content: 'Você é um assistente especializado em programação que responde em português do Brasil. Suas respostas devem sempre estar no formato JSON com a estrutura: {"content": "sua resposta aqui", "files": [{"name": "/caminho/para/arquivo.js", "content": "conteúdo do arquivo"}]}. O campo "files" é opcional e só deve ser incluído quando você estiver fornecendo arquivos de código. IMPORTANTE: Ao fornecer arquivos de código, certifique-se de incluir TODOS os arquivos necessários para que o projeto funcione corretamente, incluindo package.json, arquivos de configuração, e qualquer outro arquivo dependente. Os arquivos devem ser organizados em uma estrutura de diretórios apropriada com caminhos relativos corretos. Garanta que pacotes e dependências estejam corretamente definidos nos arquivos package.json quando necessário. Se o usuário solicitar um projeto completo, certifique-se de fornecer TODOS os arquivos necessários, incluindo configurações, componentes, estilos e qualquer outro recurso necessário.'
           },
           ...messages
         ],
-        temperature: 0.7,
-        max_tokens: 4000,
+        temperature: 0.3,
+        max_tokens: 8000,
         response_format: { type: "json_object" },
       }),
     });
