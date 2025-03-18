@@ -21,7 +21,9 @@ export const useDeepSeekStore = create<DeepSeekState>()(
 
 export const generateResponse = async (messages: any[], apiKey: string) => {
   if (!apiKey) {
-    return "Por favor, configure sua API key do DeepSeek primeiro.";
+    return JSON.stringify({
+      content: "Por favor, configure sua API key do DeepSeek primeiro."
+    });
   }
 
   try {
@@ -36,12 +38,13 @@ export const generateResponse = async (messages: any[], apiKey: string) => {
         messages: [
           {
             role: 'system',
-            content: 'Você é um assistente útil que responde em português do Brasil.'
+            content: 'Você é um assistente útil que responde em português do Brasil. Suas respostas devem sempre estar no formato JSON com a estrutura: {"content": "sua resposta aqui"}'
           },
           ...messages
         ],
         temperature: 0.7,
         max_tokens: 1000,
+        response_format: { type: "json_object" },
       }),
     });
 
@@ -49,12 +52,18 @@ export const generateResponse = async (messages: any[], apiKey: string) => {
     
     if (data.error) {
       console.error('DeepSeek API error:', data.error);
-      return `Erro na API: ${data.error.message || 'Ocorreu um erro desconhecido.'}`;
+      return JSON.stringify({
+        content: `Erro na API: ${data.error.message || 'Ocorreu um erro desconhecido.'}`
+      });
     }
 
+    // Return the raw content from DeepSeek - it should already be JSON formatted
+    // due to our system prompt and response_format parameter
     return data.choices[0].message.content;
   } catch (error) {
     console.error('Error calling DeepSeek API:', error);
-    return "Erro ao conectar com a API do DeepSeek. Verifique sua conexão ou API key.";
+    return JSON.stringify({
+      content: "Erro ao conectar com a API do DeepSeek. Verifique sua conexão ou API key."
+    });
   }
 };
