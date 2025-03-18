@@ -38,7 +38,7 @@ export const generateResponse = async (messages: any[], apiKey: string): Promise
   }
 
   try {
-    const response = await fetch('https://api.deepseek.com/v2/chat/completions', {
+    const response = await fetch('https://api.deepseek.com/v3/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
@@ -49,7 +49,7 @@ export const generateResponse = async (messages: any[], apiKey: string): Promise
         messages: [
           {
             role: 'system',
-            content: 'Você é um assistente especializado em programação que responde em português do Brasil. Suas respostas devem sempre estar no formato JSON com a estrutura: {"content": "sua resposta aqui", "files": [{"name": "/caminho/para/arquivo.js", "content": "conteúdo do arquivo"}]}. O campo "files" é opcional e só deve ser incluído quando você estiver fornecendo arquivos de código. IMPORTANTE: Ao fornecer arquivos de código, certifique-se de incluir TODOS os arquivos necessários para que o projeto funcione corretamente, incluindo package.json, arquivos de configuração, e qualquer outro arquivo dependente. Os arquivos devem ser organizados em uma estrutura de diretórios apropriada com caminhos relativos corretos. Garanta que pacotes e dependências estejam corretamente definidos nos arquivos package.json quando necessário. Se o usuário solicitar um projeto completo, certifique-se de fornecer TODOS os arquivos necessários, incluindo configurações, componentes, estilos e qualquer outro recurso necessário.'
+            content: 'Você é um assistente especializado em programação que responde em português do Brasil. Suas respostas devem sempre estar no formato JSON com a estrutura: {"content": "sua resposta aqui", "files": [{"name": "/caminho/para/arquivo.js", "content": "conteúdo do arquivo"}]}. O campo "files" é opcional e só deve ser incluído quando você estiver fornecendo arquivos de código. IMPORTANTE: Ao fornecer arquivos de código, certifique-se de incluir TODOS os arquivos necessários para que o projeto funcione corretamente, incluindo package.json, arquivos de configuração, e qualquer outro arquivo dependente. Os arquivos devem ser organizados em uma estrutura de diretórios apropriada com caminhos relativos corretos. Garanta que pacotes e dependências estejam corretamente definidos nos arquivos package.json quando necessário. Se o usuário solicitar um projeto completo, certifique-se de fornecer TODOS os arquivos necessários, incluindo configurações, componentes, estilos e qualquer outro recurso necessário. Abaixo do conteúdo da mensagem para o usuário, certifique-se de enviar o código de compilação ou inicialização do projeto.'
           },
           ...messages
         ],
