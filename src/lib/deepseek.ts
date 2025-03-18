@@ -45,7 +45,7 @@ export const generateResponse = async (messages: any[], apiKey: string): Promise
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'deepseek-coder',
+        model: 'deepseek-reasoner',
         messages: [
           {
             role: 'system',
