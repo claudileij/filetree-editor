@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { FileExplorer } from '@/components/FileExplorer';
 import { Editor } from '@/components/Editor';
@@ -18,26 +17,53 @@ interface FileNode {
 
 // Helper function to convert DeepSeek files to FileNode structure
 const convertToFileTree = (files: DeepSeekFile[]): FileNode[] => {
-  const rootNode: { [key: string]: FileNode } = {};
+  // Create a root map to store our file tree
+  const rootMap: Record<string, FileNode> = {};
   
   files.forEach(file => {
     const pathParts = file.name.split('/').filter(part => part !== '');
-    let currentLevel = rootNode;
     
-    // Process path parts except the last one (filename)
+    // If it's a file at the root level (no directories)
+    if (pathParts.length === 1) {
+      const fileName = pathParts[0];
+      rootMap[fileName] = {
+        name: fileName,
+        type: 'file',
+        content: file.content
+      };
+      return;
+    }
+    
+    // Handle files in subdirectories
+    let currentPath = '';
+    let currentMap = rootMap;
+    
+    // Process directories in the path
     for (let i = 0; i < pathParts.length - 1; i++) {
       const part = pathParts[i];
-      if (!currentLevel[part]) {
-        currentLevel[part] = {
+      currentPath = currentPath ? `${currentPath}/${part}` : part;
+      
+      // Create directory if it doesn't exist
+      if (!currentMap[part]) {
+        currentMap[part] = {
           name: part,
           type: 'folder',
           children: []
         };
+      } else if (!currentMap[part].children) {
+        // Ensure children array exists
+        currentMap[part].children = [];
       }
-      if (!currentLevel[part].children) {
-        currentLevel[part].children = [];
-      }
-      currentLevel = currentLevel[part].children as { [key: string]: FileNode };
+      
+      // Move into the children map
+      const folderNode = currentMap[part];
+      if (!folderNode.children) folderNode.children = [];
+      
+      // Create a new map for this level if needed
+      currentMap = folderNode.children.reduce((map, child) => {
+        map[child.name] = child;
+        return map;
+      }, {} as Record<string, FileNode>);
     }
     
     // Add the file to the last directory
@@ -48,22 +74,23 @@ const convertToFileTree = (files: DeepSeekFile[]): FileNode[] => {
       content: file.content
     };
     
-    // If there's only one part (file at root level)
-    if (pathParts.length === 1) {
-      rootNode[fileName] = fileNode;
+    // Get the parent folder name
+    const parentFolder = pathParts[pathParts.length - 2];
+    
+    // Find the parent folder in the current map
+    const parentNode = rootMap[parentFolder] || 
+                       Object.values(currentMap).find(node => node.name === parentFolder);
+    
+    if (parentNode && parentNode.children) {
+      parentNode.children.push(fileNode);
     } else {
-      // Get parent folder and add file to its children
-      const parentFolder = pathParts[pathParts.length - 2];
-      if (currentLevel[parentFolder] && currentLevel[parentFolder].children) {
-        (currentLevel[parentFolder].children as FileNode[]).push(fileNode);
-      } else if (currentLevel instanceof Array) {
-        currentLevel.push(fileNode);
-      }
+      // If we couldn't find the parent, add it to the root
+      rootMap[fileName] = fileNode;
     }
   });
   
-  // Convert object to array
-  return Object.values(rootNode);
+  // Convert rootMap to array and return
+  return Object.values(rootMap);
 };
 
 const Index = () => {
