@@ -19,7 +19,18 @@ export const useDeepSeekStore = create<DeepSeekState>()(
   )
 );
 
-export const generateResponse = async (messages: any[], apiKey: string) => {
+// Define the response format type
+export interface DeepSeekFile {
+  name: string;
+  content: string;
+}
+
+export interface DeepSeekResponse {
+  content: string;
+  files?: DeepSeekFile[];
+}
+
+export const generateResponse = async (messages: any[], apiKey: string): Promise<string> => {
   if (!apiKey) {
     return JSON.stringify({
       content: "Por favor, configure sua API key do DeepSeek primeiro."
@@ -38,12 +49,12 @@ export const generateResponse = async (messages: any[], apiKey: string) => {
         messages: [
           {
             role: 'system',
-            content: 'Você é um assistente útil que responde em português do Brasil. Suas respostas devem sempre estar no formato JSON com a estrutura: {"content": "sua resposta aqui"}'
+            content: 'Você é um assistente útil que responde em português do Brasil. Suas respostas devem sempre estar no formato JSON com a estrutura: {"content": "sua resposta aqui", "files": [{"name": "/caminho/para/arquivo.js", "content": "conteúdo do arquivo"}]}. O campo "files" é opcional e só deve ser incluído quando você estiver fornecendo arquivos de código.'
           },
           ...messages
         ],
         temperature: 0.7,
-        max_tokens: 1000,
+        max_tokens: 4000,
         response_format: { type: "json_object" },
       }),
     });
@@ -57,8 +68,7 @@ export const generateResponse = async (messages: any[], apiKey: string) => {
       });
     }
 
-    // Return the raw content from DeepSeek - it should already be JSON formatted
-    // due to our system prompt and response_format parameter
+    // Return the raw content from DeepSeek
     return data.choices[0].message.content;
   } catch (error) {
     console.error('Error calling DeepSeek API:', error);

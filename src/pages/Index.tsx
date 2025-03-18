@@ -1,10 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FileExplorer } from '@/components/FileExplorer';
 import { Editor } from '@/components/Editor';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useToast } from '@/hooks/use-toast';
 import { Controls } from '@/components/Controls';
+import { FILE_UPDATE_EVENT } from '@/components/Chat/Chat';
+import { DeepSeekFile } from '@/lib/deepseek';
 
 interface FileNode {
   name: string;
@@ -14,41 +16,98 @@ interface FileNode {
   short_description?: string;
 }
 
-const sampleFiles: FileNode[] = [
-  {
-    name: "src",
-    type: "folder",
-    children: [
-      {
-        name: "components",
-        type: "folder",
-        children: [
-          {
-            name: "App.tsx",
-            content: "function App() {\n  return <div>Hello World</div>;\n}",
-            short_description: "The functions thats return React component"
-          }
-        ]
-      },
-      {
-        name: "main.tsx",
-        content: "import React from 'react';\nimport ReactDOM from 'react-dom';\n\nReactDOM.render(<App />, document.getElementById('root'));",
-        short_description: "The main file to render ReactDOM"
+// Helper function to convert DeepSeek files to FileNode structure
+const convertToFileTree = (files: DeepSeekFile[]): FileNode[] => {
+  const rootNode: { [key: string]: FileNode } = {};
+  
+  files.forEach(file => {
+    const pathParts = file.name.split('/').filter(part => part !== '');
+    let currentLevel = rootNode;
+    
+    // Process path parts except the last one (filename)
+    for (let i = 0; i < pathParts.length - 1; i++) {
+      const part = pathParts[i];
+      if (!currentLevel[part]) {
+        currentLevel[part] = {
+          name: part,
+          type: 'folder',
+          children: []
+        };
       }
-    ]
-  },
-  {
-    name: "package.json",
-    content: "{\n  \"name\": \"vscode-web\",\n  \"version\": \"1.0.0\"\n}",
-    short_description: "Packages to install with npm install command"
-  }
-];
+      if (!currentLevel[part].children) {
+        currentLevel[part].children = [];
+      }
+      currentLevel = currentLevel[part].children as { [key: string]: FileNode };
+    }
+    
+    // Add the file to the last directory
+    const fileName = pathParts[pathParts.length - 1];
+    const fileNode: FileNode = {
+      name: fileName,
+      type: 'file',
+      content: file.content
+    };
+    
+    // If there's only one part (file at root level)
+    if (pathParts.length === 1) {
+      rootNode[fileName] = fileNode;
+    } else {
+      // Get parent folder and add file to its children
+      const parentFolder = pathParts[pathParts.length - 2];
+      if (currentLevel[parentFolder] && currentLevel[parentFolder].children) {
+        (currentLevel[parentFolder].children as FileNode[]).push(fileNode);
+      } else if (currentLevel instanceof Array) {
+        currentLevel.push(fileNode);
+      }
+    }
+  });
+  
+  // Convert object to array
+  return Object.values(rootNode);
+};
 
 const Index = () => {
+  const [files, setFiles] = useState<FileNode[]>([]);
   const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
   const [showExplorer, setShowExplorer] = useState(true);
   const isMobile = useIsMobile();
   const { toast } = useToast();
+
+  // Listen for file updates from the Chat component
+  useEffect(() => {
+    const handleFileUpdate = (event: CustomEvent<{files: DeepSeekFile[]}>) => {
+      const newFiles = event.detail.files;
+      
+      // Convert received files to the file tree structure
+      const fileTree = convertToFileTree(newFiles);
+      
+      setFiles(prevFiles => {
+        // Merge with existing files, replacing any with the same name
+        const updatedFiles = [...prevFiles];
+        
+        fileTree.forEach(newFile => {
+          const existingFileIndex = updatedFiles.findIndex(f => f.name === newFile.name);
+          if (existingFileIndex >= 0) {
+            updatedFiles[existingFileIndex] = newFile;
+          } else {
+            updatedFiles.push(newFile);
+          }
+        });
+        
+        return updatedFiles;
+      });
+      
+      toast({
+        title: "Arquivos recebidos",
+        description: `${newFiles.length} arquivo(s) foram adicionados ao explorador.`
+      });
+    };
+    
+    window.addEventListener(FILE_UPDATE_EVENT, handleFileUpdate as EventListener);
+    return () => {
+      window.removeEventListener(FILE_UPDATE_EVENT, handleFileUpdate as EventListener);
+    };
+  }, [toast]);
 
   const handleFileSelect = (file: FileNode) => {
     if (file.type === 'file' || !file.type) {
@@ -63,6 +122,27 @@ const Index = () => {
   const handleSave = (newContent: string) => {
     if (selectedFile) {
       console.log('Saving file:', selectedFile.name, newContent);
+      
+      // Update the content of the selected file
+      setFiles(prevFiles => {
+        // Find and update the file in the tree structure
+        const updateFileContent = (nodes: FileNode[]): FileNode[] => {
+          return nodes.map(node => {
+            if (node === selectedFile) {
+              return { ...node, content: newContent };
+            } else if (node.children) {
+              return { ...node, children: updateFileContent(node.children) };
+            }
+            return node;
+          });
+        };
+        
+        return updateFileContent(prevFiles);
+      });
+      
+      // Update the selected file reference
+      setSelectedFile({ ...selectedFile, content: newContent });
+      
       toast({
         title: "Arquivo salvo",
         description: `${selectedFile.name} foi salvo com sucesso.`
@@ -83,7 +163,7 @@ const Index = () => {
           {(showExplorer || !isMobile) && (
             <div className="flex flex-col h-full border-r border-[#333]">
               <FileExplorer
-                files={sampleFiles}
+                files={files}
                 onFileSelect={handleFileSelect}
               />
             </div>

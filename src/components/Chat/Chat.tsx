@@ -3,7 +3,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { useState, useEffect, useRef } from "react";
-import { useDeepSeekStore, generateResponse } from "@/lib/deepseek";
+import { useDeepSeekStore, generateResponse, DeepSeekResponse } from "@/lib/deepseek";
 import { ApiKeyConfig } from "./ApiKeyConfig";
 
 interface Message {
@@ -11,6 +11,9 @@ interface Message {
   content: string;
   timestamp: string;
 }
+
+// Create a custom event for file updates
+export const FILE_UPDATE_EVENT = 'deepseek-file-update';
 
 export const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([
@@ -58,9 +61,19 @@ export const Chat = () => {
       const response = await generateResponse(apiMessagesToSend, apiKey);
       
       // Parse the JSON response
-      let parsedResponse;
+      let parsedResponse: DeepSeekResponse;
       try {
         parsedResponse = JSON.parse(response);
+        
+        // Check if we have files in the response and dispatch event with them
+        if (parsedResponse.files && parsedResponse.files.length > 0) {
+          const fileUpdateEvent = new CustomEvent(FILE_UPDATE_EVENT, {
+            detail: {
+              files: parsedResponse.files
+            }
+          });
+          window.dispatchEvent(fileUpdateEvent);
+        }
       } catch (e) {
         console.error("Failed to parse JSON response:", e);
         parsedResponse = { content: "Erro ao processar a resposta da API." };

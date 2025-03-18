@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ChevronRight, ChevronDown, FileIcon, FolderIcon } from 'lucide-react';
 
@@ -78,15 +79,20 @@ const FileExplorerItem = ({ node, level = 0, onFileSelect }: { node: FileNode; l
 
 export const FileExplorer: React.FC<FileExplorerProps> = ({ files, onFileSelect }) => {
   const processedFiles = processFiles(files);
-  console.log('Processed files:', processedFiles);
 
   return (
     <div className="w-64 bg-vscode-sidebar border-r border-vscode-border overflow-y-auto">
       <div className="p-2 text-sm font-medium text-vscode-text">EXPLORER</div>
       <div className="overflow-x-hidden">
-        {processedFiles.map((file, index) => (
-          <FileExplorerItem key={index} node={file} onFileSelect={onFileSelect} />
-        ))}
+        {processedFiles.length > 0 ? (
+          processedFiles.map((file, index) => (
+            <FileExplorerItem key={index} node={file} onFileSelect={onFileSelect} />
+          ))
+        ) : (
+          <div className="p-3 text-sm text-gray-400 italic">
+            Nenhum arquivo disponível. Faça uma pergunta que retorne código.
+          </div>
+        )}
       </div>
     </div>
   );
